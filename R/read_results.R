@@ -37,6 +37,38 @@
 #' @seealso \code{\link{read_denovo_results}}, \code{\link{find_motifs_genome}}
 #' 
 
+read_known_results_custom <- function(path, homer_dir = TRUE) {
+    if (homer_dir == TRUE) {
+        path <- paste0(path, "/knownResults.txt")
+    } 
+    if (!file.exists(path)) {
+        warning(paste("File", path, "does not exist"))
+        return(NULL)
+    }
+
+    ## Read in raw file
+    col_spec <- readr::cols('c', 'c', 'd', '-', 'd', 'd', 'c', 'd', 'c')
+    raw <- readr::read_tsv(path, col_types = col_spec)
+    colnames(raw) <- c('motif_name', 'consensus',
+                       'log_p_value', 'fdr',
+                       'tgt_num', 'tgt_pct', 'bgd_num', 'bgd_pct')
+
+    ## Parse down all the combined columns
+    tmp <- raw %>%  mutate_(log_p_value = "-log10(log_p_value)")
+    parsed <- .parse_homer_subfields(tmp) %>%
+        dplyr::mutate_at(vars(contains('pct')), .parse_pcts)
+
+    ## Add on motif_pwm from the HOMERdb (see utils.R)
+    #known <- .append_known_pwm(parsed)
+
+    ## Add on motif names to motif_pwm list column
+    names(known$motif_pwm) <- known$motif_name
+    
+    return(known)
+}#read_known_results_custom
+
+
+
 read_known_results <- function(path, homer_dir = TRUE) {
     if (homer_dir) {
         path <- paste0(path, "/knownResults.txt")
