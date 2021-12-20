@@ -62,8 +62,8 @@ read_known_results_custom <- function(path, homer_dir = TRUE) {
     #known <- .append_known_pwm(parsed)
 
     ## Add on motif names to motif_pwm list column
-    names(known$motif_pwm) <- known$motif_name
-    
+    #names(known$motif_pwm) <- known$motif_name
+    known <- parsed
     return(known)
 }#read_known_results_custom
 
