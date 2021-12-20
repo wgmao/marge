@@ -155,7 +155,8 @@ find_motifs_genome <- function(x, path, genome,
     if (scale_logos) {
         cmd <- paste(cmd, "-bits")
     }
-    system(cmd, ignore.stderr = !showHomerStdErr)
+    #system(cmd, ignore.stderr = !showHomerStdErr)
+  system(cmd)
 
     ## Remove extraneous files if desired
     if (keep_minimal) {
